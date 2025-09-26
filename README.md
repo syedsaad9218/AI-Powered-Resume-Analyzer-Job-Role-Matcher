@@ -31,3 +31,34 @@ This project combines **Machine Learning, NLP, and Flask Web Development** into 
 ---
 
 ## 📂 Project Structure
+resume-analyzer/
+│── app/
+│   ├── __init__.py
+│   ├── routes.py
+│   ├── models.py
+│   ├── utils.py
+│   ├── nlp_pipeline.py
+│
+│── static/
+│   ├── css/style.css
+│   ├── js/script.js
+│   └── images/logo.png
+│
+│── templates/
+│   ├── index.html
+│   └── result.html
+│
+│── data/job_roles.csv
+│   └── sample_resumes/
+│
+│── models/model.pkl
+│   └── vectorizer.pkl
+│
+│── notebooks/resume_analysis.ipynb
+│── train_model.py
+│── app.py
+│── utils.py
+│── requirements.txt
+│── README.md
+│── .gitignore
+
