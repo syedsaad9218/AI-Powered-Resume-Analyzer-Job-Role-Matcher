@@ -1,5 +1,5 @@
 import os
-import fitz
+import fitz  
 from docx import Document
 import text_extract as te
 
