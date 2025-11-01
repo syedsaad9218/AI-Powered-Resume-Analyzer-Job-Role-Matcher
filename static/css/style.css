@@ -48,29 +48,28 @@ input[type="file"]::file-selector-button {
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
   margin-right: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 input[type="file"]::file-selector-button:hover {
-  background-color: #312e81;
+  background-color: #4338ca; /* Darker Indigo */
 }
 
-/* Hover/focus states for file input */
-input[type="file"]:hover,
-input[type="file"]:focus {
-  border-color: rgba(255, 255, 255, 0.7);
+input[type="file"]:hover {
+  border-color: #3b82f6; /* Blue */
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Result text styling */
-#result {
-  font-size: 1.1rem;
-}
+/* Responsive layout */
+@media (max-width: 640px) {
+  #center {
+    padding: 2rem 1.5rem;
+  }
 
-#prediction-result {
-  color: #22d3ee;
-  font-weight: 700; 
+  h1 {
+    font-size: 1.8rem;
+  }
 }

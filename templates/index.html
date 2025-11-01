@@ -9,25 +9,23 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <!-- Custom CSS (served from 'static' folder) -->
-  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- The 'url_for' is the proper Flask way to link static files -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   
-  <!-- Custom JS (served from 'static' folder) -->
-  <!-- 'defer' ensures script runs after HTML is parsed -->
-  <script src="/static/js/app.js" defer></script>
-  <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
-  <link rel="stylesheet" href="{{url_for ('static', filename='js/app.js')}}">
 </head>
 
-<body>
+<body class="bg-gray-100"> <!-- Body class from your style.css will override this -->
   <div id="center" class="w-full max-w-md bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 text-center border border-white/20 mx-4">
     
     <h1 class="text-3xl sm:text-4xl font-extrabold mb-6 text-white">Job Resume Analyzer</h1>
     
-    <form id="upload-form">
+    <!-- This form will be handled by app.js -->
+    <form id="upload-form" enctype="multipart/form-data">
       <label for="resume-file" class="block text-lg mb-3 text-gray-200">Upload your resume</label>
       
       <!-- File input -->
-      <input name="resume" id="resume-file" type="file" accept=".pdf,.docx" required>
+      <!-- Added 'name="resume"' which is crucial for Flask to find the file -->
+      <input name="resume" id="resume-file" type="file" accept=".pdf,.doc,.docx" required>
 
       <!-- Submit Button -->
       <button type="submit" 
@@ -37,18 +35,19 @@
         Predict Category
       </button>
     </form>
-
-    <!-- Result Area -->
-    <div class="mt-6 min-h-[80px]"> <!-- Added min-height to prevent layout jump -->
-      
-      <!-- For upload status messages -->
-      <p id="result" class="text-lg font-medium"></p>
-      
-      <!-- For prediction results -->
-      <h2 id="prediction-result" class="text-2xl font-bold text-cyan-300 mt-2"></h2>
     
+    <!-- Result Area -->
+    <div class="mt-6 text-left">
+      <!-- This div shows 'Uploading...' or 'Success!' -->
+      <div id="result" class="text-lg font-medium text-gray-100"></div>
+      <!-- This div shows the prediction -->
+      <div id="prediction-result" class="text-2xl font-bold text-white mt-2"></div>
     </div>
 
   </div>
+  
+  <!-- Custom JS (served from 'static' folder) -->
+  <!-- 'defer' ensures script runs after HTML is parsed -->
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
 </body>
 </html>

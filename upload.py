@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}
 
 def allowed_file(filename):
-    """Checks if the file's extension is in the allowed list."""
+    """Checks if the file's extension is in the allowed list."""""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -38,4 +38,4 @@ def save_resume(file, upload_path):
         return (True, filename)
     else:
         # Return failure status and an error message
-        return (False, 'Invalid file type. Please upload a .pdf, .doc, or .docx file.')
+        return (False, 'Invalid file type. Please upload a .pdf, .doc, or .docx.')

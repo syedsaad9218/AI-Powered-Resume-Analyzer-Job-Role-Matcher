@@ -1,61 +1,83 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from catboost import CatBoostClassifier
 import joblib
 import os
-
-# ======================================================
-# 1. Load Dataset
-# ======================================================
-df = pd.read_csv("job_roles.csv")
-
-# Replace these column names according to your dataset
-# Example: one column is 'Resume' and another is 'Category'
-X = df["Resume"]   # features
-y = df["Category"] # labels
-
-# ======================================================
-# 2. Preprocess Text (Optional: basic cleaning)
-# ======================================================
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
-X_vectors = vectorizer.fit_transform(X)
+# --- 1. Create Directories ---
+# Create a 'models' directory if it doesn't exist
+os.makedirs('models', exist_ok=True)
+print("Created 'models' directory.")
 
-# ======================================================
-# 3. Split Data
-# ======================================================
+# --- 2. Load Data ---
+print("Loading 'job_roles.csv'...")
+try:
+    df = pd.read_csv("job_roles.csv")
+except FileNotFoundError:
+    print("Error: 'job_roles.csv' not found.")
+    print("Please make sure the CSV file is in the same directory as this script.")
+    exit()
+
+# Check for required columns
+if "Resume" not in df.columns or "Category" not in df.columns:
+    print("Error: CSV must contain 'Resume' and 'Category' columns.")
+    exit()
+
+print("Data loaded successfully.")
+
+# --- 3. Preprocessing ---
+print("Preprocessing data...")
+# Handle potential missing values just in case
+df['Resume'].fillna('', inplace=True)
+df['Category'].fillna('Unknown', inplace=True)
+
+# Features and Labels
+X = df["Resume"]
+y = df["Category"]
+
+# Encode labels (e.g., "Python Developer" -> 0)
+lb = LabelEncoder()
+y_encoded = lb.fit_transform(y)
+
+# Vectorize text
+tfidf = TfidfVectorizer(stop_words='english', max_features=5000)
+X_vectorized = tfidf.fit_transform(X)
+
+print("Preprocessing complete.")
+
+# --- 4. Train/Test Split ---
 X_train, X_test, y_train, y_test = train_test_split(
-    X_vectors, y, test_size=0.2, random_state=42
+    X_vectorized, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
 )
 
-# ======================================================
-# 4. Train CatBoost Model
-# ======================================================
-model = CatBoostClassifier(
-    iterations=300,
-    depth=6,
-    learning_rate=0.1,
-    loss_function='MultiClass',  # <-- changed
-    eval_metric='Accuracy',      # <-- changed
-    verbose=50,
-    train_dir='catboost_info'
-)
-model.fit(X_train, y_train, eval_set=(X_test, y_test))
+# --- 5. Train Model ---
+print("Training Random Forest model...")
+# We'll use the Random Forest model as it's robust
+rf_model = OneVsRestClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
+rf_model.fit(X_train, y_train)
+print("Model training complete.")
 
-# ======================================================
-# 5. Evaluate Model
-# ======================================================
-accuracy = model.score(X_test, y_test)
-print(f"\n✅ Model training complete! Accuracy: {accuracy:.4f}")
+# --- 6. Evaluate Model (Optional, but good practice) ---
+y_pred_rf = rf_model.predict(X_test)
+# We need to get the original labels for the report
+y_test_labels = lb.inverse_transform(y_test)
+y_pred_labels = lb.inverse_transform(y_pred_rf)
 
-# ======================================================
-# 6. Save Model and Vectorizer
-# ======================================================
-os.makedirs("models", exist_ok=True)
-model.save_model("models/resume_model.cbm")
-joblib.dump(vectorizer, "models/vectorizer.pkl")
+print('\n--- Random Forest Classifier Results ---')
+print(f'Accuracy: {accuracy_score(y_test, y_pred_rf):.4f}')
+# Filter labels that are present in both test and prediction for the report
+unique_labels = sorted(list(set(y_test_labels) | set(y_pred_labels)))
+print(f'Classification Report:\n{classification_report(y_test_labels, y_pred_labels, labels=unique_labels, zero_division=0)}')
 
-print("📦 Model and vectorizer saved successfully!")
+# --- 7. Save Artifacts ---
+print("\nSaving model, vectorizer, and label encoder to 'models/' directory...")
+joblib.dump(rf_model, 'models/rf_model.pkl')
+joblib.dump(tfidf, 'models/vectorizer.pkl')
+joblib.dump(lb, 'models/label_encoder.pkl')
 
-# ======================================================
+print("✅ All artifacts saved successfully.")
+print("You can now run the Flask app using 'python app.py' or 'flask run'.")
