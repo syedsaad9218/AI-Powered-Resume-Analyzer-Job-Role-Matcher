@@ -8,9 +8,9 @@ from .services.text_extract import extract_text_from_pdf
 bp = Blueprint("main", __name__)
 
 # model files are under app/models in your new structure
-MODEL_PATH = os.path.join("app", "models", "rf_model.pkl")
-VECTORIZER_PATH = os.path.join("app", "models", "vectorizer.pkl")
-LABEL_ENCODER_PATH = os.path.join("app", "models", "label_encoder.pkl")
+MODEL_PATH = os.path.join("src", "models", "rf_model.pkl")
+VECTORIZER_PATH = os.path.join("src", "models", "vectorizer.pkl")
+LABEL_ENCODER_PATH = os.path.join("src", "models", "label_encoder.pkl")
 
 try:
     model = joblib.load(MODEL_PATH)

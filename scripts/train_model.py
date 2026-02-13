@@ -11,7 +11,7 @@ from sklearn.svm import LinearSVC
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_PATH = os.path.join(BASE_DIR, "data", "job_roles.csv")
-MODEL_DIR = os.path.join(BASE_DIR, "app", "models")
+MODEL_DIR = os.path.join(BASE_DIR, "src", "models")
 
 os.makedirs(MODEL_DIR, exist_ok=True)
 print(f"Created model directory: {MODEL_DIR}")
